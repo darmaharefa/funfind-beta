@@ -4,7 +4,7 @@ var express	= require("express"),
 	router;
 
 router = function(app){
-	r.get("/", h.user_timeline);
+	r.get("/", h.stream_sample);
 	app.use(r);
 };
 

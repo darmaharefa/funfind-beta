@@ -1,6 +1,8 @@
 var twitter = require('twitter'),
-	handler, txt,
-	home;
+	handler, data, home;
+
+var text = '';
+var data = [];
 
 
 var client = new twitter({
@@ -10,28 +12,77 @@ var client = new twitter({
 		access_token_secret:'w9LQCQuAEWQn81KwAOhDqeUyn3I4EmhSrSkf2k2UulpZy'
 });
 
-txt = "Hello World";
 
-user_timeline = function(req, res, next) {
+
+user_timeline = function(req, res) {
   // https://dev.twitter.com/rest/reference/get/statuses/user_timeline
   client.get('statuses/user_timeline', { screen_name: 'siberiian', count: 20 }, function(error, tweets, response) {
     if (!error) {
-    	// console.log(tweets.name);
-      	res.status(200).render('home.html', { title: 'Express', tweets: tweets });
+    	res.sendStatus(200);
+    	for (i = 0; i < tweets.length; i++) { 
+		    text += tweets[i].text + "\n";
+		}
+    	console.log(text);
     }
     else {
-      res.status(500).json({ error: error });
+      // res.status(500).json({ error: error });
+      console.log("error");
     }
   });
 };
 
+search = function(req,res) {
+	client.get('search/tweets', {q: '#harefatag'}, function(error, tweets, response){
+		res.sendStatus(200);
+  //   	for (i = 0; i < tweets.statuses.length; i++) { 
+		//     text += tweets.statuses[i].text + "\n";
+		// }
+    	console.log(tweets.statuses.length);
+	});
+};
+
+stream_search = function(req, res) {
+	client.stream('statuses/filter', {track: '#SegeraJerujikanAhok'}, function(stream) {
+	  	stream.on('data', function(tweet) {
+	  		data.push(tweet);
+	    	console.log(tweet.text);
+	  	});
+
+		stream.on('error', function(error) {
+	    	throw error;
+	  	});
+	});
+}
+
+stream_sample = function(req, res) {
+	client.stream('statuses/sample', {}, function(stream) {
+	  	stream.on('data', function(tweet) {
+	  		data.push(tweet);
+	    	// console.log(tweet.text);
+	  	});
+
+	  	setTimeout(function(){
+	  		console.log("Collected "+ data.length + " tweets");
+	  	},5000);
+
+		stream.on('error', function(error) {
+	    	throw error;
+	  	});
+	});
+}
+
+
 home = function(req, res){
-	res.render("home.html",{'data':txt});
+
 };
 
 handler = {
-	home : home,
-	user_timeline : user_timeline
+	home 			: home,
+	user_timeline 	: user_timeline,
+	search 			: search,
+	stream_search 	: stream_search,
+	stream_sample 	: stream_sample,
+	// battle			: battle
 }
 
 module.exports = handler;
