@@ -18,6 +18,7 @@
   "homepage": "https://github.com/darmaharefa/funfind-beta#readme",
   "dependencies": {
     "express": "^4.13.4",
-    "nunjucks": "^2.4.2"
+    "nunjucks": "^2.4.2",
+    "twitter": "^1.2.5"
   }
 }
